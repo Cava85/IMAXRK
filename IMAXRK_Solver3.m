@@ -1,11 +1,8 @@
-function [ FUN,CON ] = IMAXRK_Solver3
+function [ FUN, con , CON ] = IMAXRK_Solver3
 % clear all
 % close all
 % clc
-
-
 %% Define variables
-
 syms bI1 bI2 bI3 bI4 bI5
 syms bE1 bE2 bE3 bE4
 syms     c2  c3  c4
@@ -62,8 +59,7 @@ t44eei = be*Ae*Ai*c*e - 1/24;
 
 tau4 = sqrt(t42ei^2 + t42ee^2 + t43ie^2 + t43ee^2 + t44iii^2 + t44iie^2 + ...
        t44iei^2 + t44iee^2 + t44eii^2 + t44eie^2 + t44eei^2 + t44eee^2);
-% keyboard
-   
+
 %% Solve nonlinear system
 
 SolC = [1/2, 9/10, 7/10];
@@ -123,6 +119,18 @@ CON{2}.val = double(vpa(t44eeeSOL));
 CON{2}.lowb = -6/1000;
 % extra boundary to inforce the 0 thereshold
 CON{2}.upb = -0.0001;
-%% generate obj. functions
 
-FUN.tau4SOL = vpa(tau4SOL);
+%%
+
+con{1} = CON{1}.val - CON{1}.upb;
+con{2} = -CON{1}.val + CON{1}.lowb;
+con{3} = CON{2}.val - CON{2}.upb;
+con{4} = -CON{2}.val + CON{2}.lowb;
+con{5} =  4 ; % TODO  
+con{6} = 9 ; % TODO 
+
+
+%% generate obj. functions
+FUN.field = strcat('func' , '_tau4SOL');
+FUN.val  = double(vpa(tau4SOL)) ;
+FUN.upb = 1/10;  
